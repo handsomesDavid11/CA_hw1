@@ -194,9 +194,9 @@ int main() {
 
 
     bf16_t p01 =  bf16_add(bf16_mul(fp32_to_bf16((float)0.5),fp32_to_bf16(point[0][0])),bf16_mul(fp32_to_bf16((float)0.5),fp32_to_bf16(point[0][2])));
-    printf("result1 (Float): %f\n", bf16_to_fp32(p01)); 
+//    printf("result1 (Float): %f\n", bf16_to_fp32(p01)); 
     bf16_t p21 =  bf16_add(bf16_mul(fp32_to_bf16((float)0.5),fp32_to_bf16(point[2][0])),bf16_mul(fp32_to_bf16((float)0.5),fp32_to_bf16(point[2][2])));
-    printf("result1 (Float): %f\n", bf16_to_fp32(p21)); 
+//    printf("result1 (Float): %f\n", bf16_to_fp32(p21)); 
     bf16_t p11 =  bf16_add(bf16_mul(fp32_to_bf16((float)0.5),p01),bf16_mul(fp32_to_bf16((float)0.5),p21));
 
     printf("result1 (Float): %f\n", bf16_to_fp32(p11)); 
