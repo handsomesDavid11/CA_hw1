@@ -156,7 +156,7 @@ bf16_t bf16_add(bf16_t a, bf16_t b) {
 
     //use my clz
     int clz = my_clz(mrtmp);
-    printf("%d",clz);
+    //printf("%d",clz);
     int16_t shift = 0;
     if (clz <= 8) {
         shift = 8 - clz;
@@ -181,9 +181,15 @@ bf16_t bf16_add(bf16_t a, bf16_t b) {
 
 int main() {
     //use linear interpolation to find point[1][1]
-    float point[3][3] = {{0.958,0   , 1.84721},
-                        {0     ,0   , 0     },
-                        {2.8232,0   , 3.72245}};
+    float point[3][3] = {{0.958 ,0   , 1.84721},
+                        {0      ,0   , 0     },
+                        {2.8232 ,0   , 3.72245}};
+    float point1[3][3] = {{0.358,0   , 1.4231},
+                        {0      ,0   , 0     },
+                        {6.7723 ,0   , 8.1225}};
+    float point2[3][3] ={{0.111 ,0   , 3.3365},
+                        {0      ,0   , 0     },
+                        {11.6782,0   , 4.3211}};
 
 
 
@@ -191,11 +197,18 @@ int main() {
     bf16_t p31 =  bf16_add(bf16_mul(fp32_to_bf16((float)0.5),fp32_to_bf16(point[2][0])),bf16_mul(fp32_to_bf16((float)0.5),fp32_to_bf16(point[2][2])));
     bf16_t p11 =  bf16_add(bf16_mul(fp32_to_bf16((float)0.5),p01),bf16_mul(fp32_to_bf16((float)0.5),p31));
 
+    printf("result1 (Float): %f\n", bf16_to_fp32(p11)); 
 
+    p01 =  bf16_add(bf16_mul(fp32_to_bf16((float)0.5),fp32_to_bf16(point1[0][0])),bf16_mul(fp32_to_bf16((float)0.5),fp32_to_bf16(point1[0][2])));
+    p31 =  bf16_add(bf16_mul(fp32_to_bf16((float)0.5),fp32_to_bf16(point1[2][0])),bf16_mul(fp32_to_bf16((float)0.5),fp32_to_bf16(point1[2][2])));
+    p11 =  bf16_add(bf16_mul(fp32_to_bf16((float)0.5),p01),bf16_mul(fp32_to_bf16((float)0.5),p31));
 
+    printf("result2 (Float): %f\n", bf16_to_fp32(p11)); 
 
-    // bf16_t result = bf16_sub(x,y);
-     printf("result (Float): %f\n", bf16_to_fp32(p11));
-     
-     return 0;
+    p01 =  bf16_add(bf16_mul(fp32_to_bf16((float)0.5),fp32_to_bf16(point2[0][0])),bf16_mul(fp32_to_bf16((float)0.5),fp32_to_bf16(point2[0][2])));
+    p31 =  bf16_add(bf16_mul(fp32_to_bf16((float)0.5),fp32_to_bf16(point2[2][0])),bf16_mul(fp32_to_bf16((float)0.5),fp32_to_bf16(point2[2][2])));
+    p11 =  bf16_add(bf16_mul(fp32_to_bf16((float)0.5),p01),bf16_mul(fp32_to_bf16((float)0.5),p31));
+
+    printf("result3 (Float): %f\n", bf16_to_fp32(p11)); 
+    return 0;
 }
