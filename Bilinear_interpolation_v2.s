@@ -283,306 +283,158 @@ no_shift:
     ret
 
      
-     
+Bilinear_interpolation:
+    addi    sp, sp, -52
+    sw      s0, 0(sp)
+    sw      s1, 4(sp)
+    sw      s2, 8(sp)
+    sw      s3, 12(sp)
+    sw      s4, 16(sp)
+    sw      s5, 20(sp)
+    sw      s6, 24(sp)
+    sw      s7, 28(sp)
+    sw      s8, 32(sp)
+    sw      s9, 36(sp)
+    sw      s10, 40(sp)
+    sw      s11, 44(sp)
+    sw      ra, 48(sp)
 
+    mv      s0, a0
+    mv      s1, a1
+    
+#-------------------(0,0)-------------------#
+    lw      a0, 0(s0)
+    call    fp32_to_bf16
+    mv      a4, a0
+    lw      a0, 0(s1)
+    call    fp32_to_bf16
+    mv      a5, a0    
+    jal     ra, bf16_mul
+    mv      s2, a0
+
+#-------------------(2,0)-------------------#
+    lw      a0, 4(s0)
+    call    fp32_to_bf16
+    mv      a4, a0
+    lw      a0, 0(s1)
+    call    fp32_to_bf16
+    mv      a5, a0    
+    jal     ra, bf16_mul
+    mv      s3, a0
+
+#-------------------(1,0)-------------------#
+    mv      a4, s2
+    mv      a5, s3
+    call    bf16_add
+    mv      s8, a0
+
+#-------------------(0,2)-------------------#
+    lw      a0, 8(s0)
+    call    fp32_to_bf16
+    mv      a4, a0
+    lw      a0, 0(s1)
+    call    fp32_to_bf16
+    mv      a5, a0    
+    jal     ra, bf16_mul
+    mv      s2, a0
+
+#-------------------(2,2)-------------------#
+    lw      a0, 12(s0)
+    call    fp32_to_bf16
+    mv      a4, a0
+    lw      a0, 0(s1)
+    call    fp32_to_bf16
+    mv      a5, a0    
+    jal     ra, bf16_mul
+    mv      s3, a0
+
+#-------------------(1,2)-------------------#
+    mv      a4, s2
+    mv      a5, s3
+    call    bf16_add
+    mv      s9, a0
+
+#-------------------(0,1)-------------------#
+    mv      a0, s8
+    call    fp32_to_bf16
+    mv      a4, a0
+    lw      a0, 0(s1)
+    call    fp32_to_bf16
+    mv      a5, a0    
+    jal     ra, bf16_mul
+    mv      s10, a0
+
+#-------------------(1,1)-------------------#
+    mv      a0, s9
+    call    fp32_to_bf16
+    mv      a4, a0
+    lw      a0, 0(s1)
+    call    fp32_to_bf16
+    mv      a5, a0
+    call    bf16_mul
+    mv      s11, a0
+
+    mv      a4, s10
+    mv      a5, s11
+    call    bf16_add
+    
+
+    lw      s0, 0(sp)
+    lw      s1, 4(sp)
+    lw      s2, 8(sp)
+    lw      s3, 12(sp)
+    lw      s4, 16(sp)
+    lw      s5, 20(sp)
+    lw      s6, 24(sp)
+    lw      s7, 28(sp)
+    lw      s8, 32(sp)
+    lw      s9, 36(sp)
+    lw      s10, 40(sp)
+    lw      s11, 44(sp)
+    lw      ra, 48(sp)
+    addi    sp, sp, 52
+
+    ret
      
         
  main:
     # Load test data
-    la s0, test0
-    la s1, interpolation
-    lw a0, 0(s0)      
-    call fp32_to_bf16  # Convert to BF16
-
-    mv  a4,a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-
-    mv  a5,a0    
-    #input a4,a5
-    jal    ra, bf16_mul  # Convert to BF16
-    mv    s2, a0
-#-------------------(0,2)--------------
-    lw a0, 4(s0)      
-    call fp32_to_bf16  # Convert to BF16
-
-    mv  a4,a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-
-    mv  a5,a0    
-    #input a4,a5
-    jal    ra, bf16_mul  # Convert to BF16
-    mv    s3, a0
-#-------------------calculate(0,1)---------
-    mv    a4, s2
-    mv    a5, s3
-    call bf16_add
-    mv s8 , a0
-
-    
-
-    lw a0, 8(s0)      
-    call fp32_to_bf16  # Convert to BF16
-    mv  a4, a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-
-    mv  a5,a0    
-    #input a4,a5
-    jal    ra, bf16_mul  # Convert to BF16
-    mv    s2, a0
-#-------------------(2,2)--------------
-    lw a0, 12(s0)      
-    call fp32_to_bf16  # Convert to BF16
-
-    mv  a4,a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-
-    mv  a5,a0    
-    #input a4,a5
-    jal    ra, bf16_mul  # Convert to BF16
-    mv    s3, a0
-#-------------------calculate(1,2)---------
-    mv    a4, s2
-    mv    a5, s3
-    call bf16_add
-    mv s9 , a0
-#-----------------0,1--------------------#    
-    mv  a0, s8      
-    call fp32_to_bf16  # Convert to BF16
-    mv  a4, a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-    mv  a5,a0    
-    #input a4,a5
-    jal    ra, bf16_mul  # Convert to BF16
-    mv    s10, a0
-
-
-#-----------------0,1--------------------#    
-    mv  a0, s9      
-    call fp32_to_bf16  # Convert to BF16
-    mv  a4, a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-    mv  a5,a0    
-    #input a4,a5
-    call     bf16_mul  # Convert to BF16
-    mv    s11, a0
-    
-    mv    a4, s10
-    mv    a5, s11
-    call bf16_add
-    mv s9 , a0
-    
-    la a0, result1
-    li a7, 4
+    la a0, test0
+    la a1, interpolation
+    call Bilinear_interpolation
+    mv      s0, a0
+    la      a0, result1
+    li      a7, 4
     ecall
-    mv a0 , s9
-    li a7, 2
-    ecall
-
-    
-    
-    
-#----------------------------- Load test data ---------------------------#
-    la s0, test1
-    la s1, interpolation
-    lw a0, 0(s0)      
-    call fp32_to_bf16  # Convert to BF16
-
-    mv  a4,a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-
-    mv  a5,a0    
-    #input a4,a5
-    jal    ra, bf16_mul  # Convert to BF16
-    mv    s2, a0
-#-------------------(0,2)--------------
-    lw a0, 4(s0)      
-    call fp32_to_bf16  # Convert to BF16
-
-    mv  a4,a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-
-    mv  a5,a0    
-    #input a4,a5
-    jal    ra, bf16_mul  # Convert to BF16
-    mv    s3, a0
-#-------------------calculate(0,1)---------
-    mv    a4, s2
-    mv    a5, s3
-    call bf16_add
-    mv s8 , a0
-
-    
-
-    lw a0, 8(s0)      
-    call fp32_to_bf16  # Convert to BF16
-    mv  a4, a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-
-    mv  a5,a0    
-    #input a4,a5
-    jal    ra, bf16_mul  # Convert to BF16
-    mv    s2, a0
-#-------------------(2,2)--------------
-    lw a0, 12(s0)      
-    call fp32_to_bf16  # Convert to BF16
-
-    mv  a4,a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-
-    mv  a5,a0    
-    #input a4,a5
-    jal    ra, bf16_mul  # Convert to BF16
-    mv    s3, a0
-#-------------------calculate(1,2)---------
-    mv    a4, s2
-    mv    a5, s3
-    call bf16_add
-    mv s9 , a0
-#-----------------0,1--------------------#    
-    mv  a0, s8      
-    call fp32_to_bf16  # Convert to BF16
-    mv  a4, a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-    mv  a5,a0    
-    #input a4,a5
-    jal    ra, bf16_mul  # Convert to BF16
-    mv    s10, a0
-
-
-#-----------------0,1--------------------#    
-    mv  a0, s9      
-    call fp32_to_bf16  # Convert to BF16
-    mv  a4, a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-    mv  a5,a0    
-    #input a4,a5
-    call     bf16_mul  # Convert to BF16
-    mv    s11, a0
-    
-    mv    a4, s10
-    mv    a5, s11
-    call bf16_add
-    mv s9 , a0
-    
-    la a0, result2
-    li a7, 4
-    ecall
-    mv a0 , s9
-    li a7, 2
-    ecall
-
-
-#----------------------------- Load test data ---------------------------#
-    la s0, test2
-    la s1, interpolation
-    lw a0, 0(s0)      
-    call fp32_to_bf16  # Convert to BF16
-
-    mv  a4,a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-
-    mv  a5,a0    
-    #input a4,a5
-    jal    ra, bf16_mul  # Convert to BF16
-    mv    s2, a0
-#-------------------(0,2)--------------
-    lw a0, 4(s0)      
-    call fp32_to_bf16  # Convert to BF16
-
-    mv  a4,a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-
-    mv  a5,a0    
-    #input a4,a5
-    jal    ra, bf16_mul  # Convert to BF16
-    mv    s3, a0
-#-------------------calculate(0,1)---------
-    mv    a4, s2
-    mv    a5, s3
-    call bf16_add
-    mv s8 , a0
-
-    
-
-    lw a0, 8(s0)      
-    call fp32_to_bf16  # Convert to BF16
-    mv  a4, a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-
-    mv  a5,a0    
-    #input a4,a5
-    jal    ra, bf16_mul  # Convert to BF16
-    mv    s2, a0
-#-------------------(2,2)--------------
-    lw a0, 12(s0)      
-    call fp32_to_bf16  # Convert to BF16
-
-    mv  a4,a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-
-    mv  a5,a0    
-    #input a4,a5
-    jal    ra, bf16_mul  # Convert to BF16
-    mv    s3, a0
-#-------------------calculate(1,2)---------
-    mv    a4, s2
-    mv    a5, s3
-    call bf16_add
-    mv s9 , a0
-#-----------------0,1--------------------#    
-    mv  a0, s8      
-    call fp32_to_bf16  # Convert to BF16
-    mv  a4, a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-    mv  a5,a0    
-    #input a4,a5
-    jal    ra, bf16_mul  # Convert to BF16
-    mv    s10, a0
-
-
-#-----------------0,1--------------------#    
-    mv  a0, s9      
-    call fp32_to_bf16  # Convert to BF16
-    mv  a4, a0
-    lw a0, 0(s1)        
-   call  fp32_to_bf16  # Convert to BF16
-    mv  a5,a0    
-    #input a4,a5
-    call     bf16_mul  # Convert to BF16
-    mv    s11, a0
-    
-    mv    a4, s10
-    mv    a5, s11
-    call bf16_add
-    mv s9 , a0
-    
-    la a0, result3
-    li a7, 4
-    ecall
-    mv a0 , s9
-    li a7, 2
+    mv      a0, s0
+    li      a7, 2
     ecall
     
+        # Load test data
+    la a0, test1
+    la a1, interpolation
+    call Bilinear_interpolation
+    mv      s0, a0
+    la      a0, result2
+    li      a7, 4
+    ecall
+    mv      a0, s0
+    li      a7, 2
+    ecall
+    
+        # Load test data
+    la a0, test2
+    la a1, interpolation
+    call Bilinear_interpolation
+    mv      s0, a0
+    la      a0, result3
+    li      a7, 4
+    ecall
+    mv      a0, s0
+    li      a7, 2
+    ecall
+    
+    
+    
 
-     
-     
- 
-     
      
