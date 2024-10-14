@@ -1,7 +1,7 @@
 .data
-test0: .word 0x3e70a3d7, 0x3e8b4396, 0x3eaa7efa, 0x3f6a7efa  #  0.235   0.272    0.333    0.916
-test1: .word 0x3eb74bc7, 0x3fb62824, 0x40d8b6ae, 0x4101f5c3
-test2: .word 0x3de353f8, 0x40558937, 0x413ad9e8, 0x408a4674
+test0: .word 0x48084780, 0x3de353f8, 0x3f272b02, 0x3ea56042  #  0.235   0.272    0.333    0.916
+test1: .word 0x3eb74bc7, 0x46d0ac00, 0x454ef000, 0x4101f5c3
+test2: .word 0x455e4000, 0x40558937, 0x413ad9e8, 0x461a6400
 interpolation: .word 0x3f000000
 
 
@@ -14,9 +14,10 @@ j main
 
 
 fp32_to_bf16:
+
     mv t0, a0
-    # exp
-    li t6, 0x7F800000
+    # exp     # use to check NaN case
+    li t6, 0x7F800000    
     and t1, t0, t6
     # mantissa
     li t6, 0x007FFFFF
@@ -31,6 +32,8 @@ fp32_to_bf16:
     or t0, t0, t1
     or t0, t0, t2
     mv a0, t0
+
+    
     ret
  
 my_clz:
